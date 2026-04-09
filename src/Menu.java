@@ -89,13 +89,13 @@ public class Menu {
 
     private Ticket findTicket(int id) {
 
-        // сначала проверяем cache
+
         Ticket cached = cacheService.get(id);
         if (cached != null) {
             return cached;
         }
 
-        // если нет — ищем в списке
+
         for (Ticket t : tickets) {
             if (t.id == id) {
                 System.out.println("From file");
