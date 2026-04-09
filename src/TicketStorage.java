@@ -1,24 +1,28 @@
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TicketStorage {
     private static final String FILE_NAME = "tickets.json";
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public List<Ticket> loadTickets() {
-        File file = new File(FILE_NAME);
+        try (Reader reader = new FileReader(FILE_NAME)) {
 
-        if (!file.exists()) {
+            Type listType = new TypeToken<List<Ticket>>() {}.getType();
+            List<Ticket> tickets = gson.fromJson(reader, listType);
+
+            return tickets != null ? tickets : new ArrayList<>();
+
+        } catch (FileNotFoundException e) {
             return new ArrayList<>();
-        }
 
-        try {
-            return objectMapper.readValue(file, new TypeReference<List<Ticket>>() {});
         } catch (IOException e) {
             System.out.println("Error loading tickets: " + e.getMessage());
             return new ArrayList<>();
@@ -26,8 +30,8 @@ public class TicketStorage {
     }
 
     public void saveTickets(List<Ticket> tickets) {
-        try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_NAME), tickets);
+        try (Writer writer = new FileWriter(FILE_NAME)) {
+            gson.toJson(tickets, writer);
         } catch (IOException e) {
             System.out.println("Error saving tickets: " + e.getMessage());
         }
