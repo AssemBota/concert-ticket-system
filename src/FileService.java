@@ -11,7 +11,7 @@ public class FileService {
     private static final String FILE_NAME = "tickets.json";
     private Gson gson = new Gson();
 
-    // загрузка из файла
+
     public List<Ticket> load() {
         try (Reader reader = new FileReader(FILE_NAME)) {
 
@@ -27,7 +27,7 @@ public class FileService {
         }
     }
 
-    // сохранение в файл
+
     public void save(List<Ticket> tickets) {
         try (Writer writer = new FileWriter(FILE_NAME)) {
             gson.toJson(tickets, writer);
